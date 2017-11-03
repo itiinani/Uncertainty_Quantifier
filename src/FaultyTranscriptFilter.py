@@ -13,10 +13,8 @@ def filterFaultyTranscripts():
         if data[0] in ciMap:
             ciTuple = ciMap[data[0]]
             if (float(data[1]) < ciTuple[0]) or (float(data[1]) > ciTuple[1]):
-                tuple = data[0], float(data[1]), ciTuple[0], ciTuple[1]
+                tuple = data[0]
                 faultyTr.append(tuple)
     return faultyTr
 
-
-print(filterFaultyTranscripts())
 
