@@ -1,5 +1,5 @@
 from src import FaultyTranscriptFilter
-
+import csv
 
 def parseEQClass():
     trCount = 0
@@ -44,6 +44,8 @@ def getUniqueAndAmbiguousMaps():
     ambiguous_map = dict()
     notInEq = []
     faultyList = FaultyTranscriptFilter.filterFaultyTranscripts()
+
+
     trEQMap = parseEQClass()
     for tr in faultyList:
         if tr in trEQMap.keys():
@@ -65,5 +67,20 @@ def getUniqueAndAmbiguousMaps():
     print("Ambiguously mapped faulty list length: ", len(ambiguous_map))
     print("Non-mapped faulty list length: ", len(notInEq))
 
+    v = open('../input/quant.csv')
+    r = csv.reader(v)
+    print "done reading"
+    row = r.next()
+    while row:
+        if row[0] in faultyList:
+            row.append(1)
+        else:
+            row.append(0)
+        if row[0] in uni_uni_map.keys():
+            row.append(1)
+        else:
+            row.append(0)
+        row = r.next()
+    print "Done"
 
 getUniqueAndAmbiguousMaps()
