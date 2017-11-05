@@ -33,7 +33,7 @@ def get_FaultyTranscriptError_CSV():
         errorFraction = (truthValue - quantValue)/truthValue
         resultMap[x] = errorFraction
     df = pd.DataFrame(list(resultMap.items()), columns=['TranscriptID', 'ErrorFraction'])
-    df.to_csv("errorFraction_faulty.csv", encoding='utf-8')
+    df.to_csv("../input/errorFraction_faulty.csv", encoding='utf-8')
 
 def get_AllTrancriptsError_CSV():
     lineCount2 = 0
@@ -64,7 +64,7 @@ def get_AllTrancriptsError_CSV():
         errorFraction = (truthValue - quantValue) / truthValue
         resultMap[x] = errorFraction
     df = pd.DataFrame(list(resultMap.items()), columns=['TranscriptID', 'ErrorFraction'])
-    df.to_csv("errorFraction_all.csv", encoding='utf-8')
+    df.to_csv("../input/errorFraction_all.csv", encoding='utf-8')
 
 get_FaultyTranscriptError_CSV()
 get_AllTrancriptsError_CSV()
