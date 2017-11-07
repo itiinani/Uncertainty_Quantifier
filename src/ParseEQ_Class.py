@@ -1,12 +1,6 @@
-from sklearn.cross_validation import train_test_split
-from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.preprocessing import StandardScaler
-
 from src import FaultyTranscriptFilter
 from src import dataForGraphs
 import csv
-import pandas as pd
-from sklearn import svm
 
 def parseEQClass():
     trCount = 0
@@ -34,23 +28,19 @@ def parseEQClass():
                 val1 = eq_tuple[0] + int(val[len(val) - 1][:-1])
                 val2 = eq_tuple[1] + 1
                 val3 = eq_tuple[2] + int(val[0])
-                val4 = 0
                 if int(val[0]) == 1:
-                    val4 = eq_tuple[3] + 10000
-                else:
-                    val4 = eq_tuple[3] - (int(val[0])*100)
+                    eq_tuple[3] = 0
                 eq_tuple[0] = val1
                 eq_tuple[1] = val2
                 eq_tuple[2] = val3
-                eq_tuple[3] = val4
             else:
                 eq_tuple.append(int(val[len(val) - 1][:-1]))
                 eq_tuple.append(1)
                 eq_tuple.append(int(val[0]))
                 if int(val[0]) == 1:
-                    eq_tuple.append(10000)
+                    eq_tuple.append(1)
                 else:
-                    eq_tuple.append(-int(val[0])*100)
+                    eq_tuple.append(-1)
             trEqMap[trMap[int(tr_id)]] = eq_tuple
     return trEqMap
 
@@ -91,7 +81,7 @@ def getUniqueAndAmbiguousMaps():
             else:
                 row.append(0)
             if tr in errorMap.keys():
-                row.append(errorMap[tr])
+                row.append(errorMap[tr]*10000)
             else:
                 row.append(0)
             if tr in faultyList:
@@ -106,44 +96,3 @@ def getUniqueAndAmbiguousMaps():
         writer.writerow(row)
     v.close()
     write.close()
-
-    train_dataframe = pd.read_csv("../bin/quant_new.csv",sep="\t")
-    train_dataframe["Length"] = train_dataframe["Length"].astype(int)
-    train_dataframe["EffectiveLength"] = train_dataframe["EffectiveLength"].astype(int)
-    train_dataframe["TPM"] = train_dataframe["TPM"].astype(int)
-    train_dataframe["NumReads"] = train_dataframe["NumReads"].astype(int)
-    train_dataframe["ErrorFraction"] = train_dataframe["NumReads"].astype(int)
-
-    print("Classification started")
-    train_dataframe.drop('Length',axis=1)
-    train_dataframe.drop('EffectiveLength',axis=1)
-    train_dataframe.drop('TPM', axis=1)
-    train_dataframe.drop('NumReads',axis=1)
-    train_dataframe.drop('Weight', axis=1)
-    train_dataframe.drop('UniqueMap', axis=1)
-    train_dataframe.drop('ErrorFraction', axis=1)
-
-    train_dataframe = train_dataframe.drop('Name',axis=1)
-    X = train_dataframe.drop('Faulty',axis=1)
-    y = train_dataframe['Faulty']
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
-    scaler = StandardScaler()
-    scaler.fit(X_train)
-    print("Training data fitted")
-    X_train = scaler.transform(X_train)
-    X_test = scaler.transform(X_test)
-
-    clf = svm.SVC(gamma=0.001, C=100)
-    clf.fit(X_train, y_train)
-
-    print("Training done")
-
-    predictions = clf.predict(X_test)
-
-    print(confusion_matrix(y_test, predictions))
-    print(classification_report(y_test, predictions))
-    print("Classification done")
-
-
-getUniqueAndAmbiguousMaps()
