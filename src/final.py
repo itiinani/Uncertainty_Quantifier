@@ -9,7 +9,7 @@ import statistics
 def evaluateCI():
     trCIMap = dict()
     print("hello")
-    with open('../input/poly_ro/quant_bootstraps.tsv') as tsv:
+    with open('../input/poly_mo/quant_bootstraps.tsv') as tsv:
         for column in zip(*[line for line in csv.reader(tsv, dialect="excel-tab")]):
             bootstrapData = list(column)
             trID = bootstrapData.pop(0)
@@ -39,7 +39,7 @@ def evaluateCI2():
 def error():
     lineCount2 = 0
     truthMap = dict()
-    for line in open('../input/poly_ro/poly_truth.tsv'):
+    for line in open('../input/poly_mo/poly_truth.tsv'):
         lineCount2 += 1
         if lineCount2 == 1:
             continue
@@ -65,7 +65,7 @@ def parseEQClass():
     trEqMap = dict()
     i = 0
     j = 0
-    for line in open('../input/poly_ro/eq_classes.txt'):
+    for line in open('../input/poly_mo/eq_classes.txt'):
         lineCount += 1
         if(lineCount == 1):
             trCount = int(line)
@@ -171,7 +171,7 @@ def unique_map2():
 mean_sd = evaluateCI()
 err = error()
 unique, weight = unique_map()
-v = open("../input/poly_ro/quant.tsv","r")
+v = open("../input/poly_mo/quant.tsv","r")
 r = csv.reader(v,delimiter="\t")
 write = open("../bin/quant_training.csv", "w")
 writer = csv.writer(write,dialect='excel',delimiter='\t',quoting=csv.QUOTE_ALL)
@@ -266,11 +266,14 @@ df_test = df_test.drop('Name',axis=1)
 df_test = df_test.drop('Mean',axis=1)
 df_test = df_test.drop('Std_deviation',axis=1)
 X_test = df_test.drop('error', axis=1)
+scaler = StandardScaler()
+scaler.fit(X_test)
+X_test = scaler.transform(X_test)
 y_test = df_test['error']
 
 regr = linear_model.LinearRegression()
 regr.fit(X_train,y_train)
 predict = regr.predict(X_test)
-print(predict,y_test)
+#print(predict,y_test)
 print(r2_score(y_test,predict))
 
